@@ -5,10 +5,9 @@ import java.util.Stack;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
         String input = "(A[20,10]|(B[20,10]|C[30,10]))–(D[30,50]|(E[40,30]–F[40,20]))";
         Node root = Node.buildTree(input);
-        root.printTree(0);
+        root.printTree();
     }
 }
 
@@ -16,11 +15,6 @@ class Node {
     data data;
     Node left;
     Node right;
-    Node (data data, Node left, Node right) {
-        this.data = data;
-        this.left = left;
-        this.right = right;
-    }
     Node (data data, Node node, char dir) {
         this.data = data;
         if(dir == 'l')
@@ -36,22 +30,16 @@ class Node {
 
     }
 
-    public void printTree(int level) {
+    public void printTree() {
         if (this == null) {
             return;
         }
-
-        if (right != null) {
-            right.printTree(level + 1);
+        System.out.println(data.relation);
+        if (right != null && right.data != null) {
+            right.printTree();
         }
-
-        for (int i = 0; i < level; i++) {
-            System.out.print("\t");
-        }
-        System.out.println(data.name);
-
-        if (left != null) {
-            left.printTree(level + 1);
+        if (left != null && left.data != null) {
+            left.printTree();
         }
     }
     public static Node buildTree(String input) {
