@@ -6,5 +6,10 @@ public class Main {
         System.out.println();
         System.out.println("Tree: ");
         root.printTree(0, "root");
+        System.out.println();
+        if(root.checkRec())
+            System.out.println("Is a rectangle");
+        else
+            System.out.println("Not a rectangle");
     }
 }

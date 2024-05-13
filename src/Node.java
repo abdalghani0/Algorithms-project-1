@@ -37,6 +37,8 @@ public class Node {
     public static Node buildTree(String input) {
         int count = 0;
         Node root = new Node();
+        Node rightChild = new Node();
+        Node leftChild = new Node();
         for (int i = 0; i < input.length(); i++) {
             if(input.charAt(i) == '(') {
                 count++;
@@ -58,15 +60,16 @@ public class Node {
                     int height = Integer.parseInt(data.substring(commaIndex + 1, closeIndex));
                     char name = data.charAt(0);
                     Data recData = new Data(width, height, name);
-                    root.setLeft(new Node(recData));
+                    leftChild = new Node(recData);
                     System.out.println("name: " + name + " width: " + width + " height: " + height);
                 }
                 else {
                     if(input.charAt(0) == '(') {
-                        root.setLeft(buildTree(input.substring(1, i)));
+                        leftChild = buildTree(input.substring(1, i));
+
                     }
                     else {
-                        root.setRight(buildTree(input.substring(0, i)));
+                        leftChild = buildTree(input.substring(0, i));
                     }
                 }
                 if(input.charAt(i+2) == '['){
@@ -78,23 +81,65 @@ public class Node {
                     int height = Integer.parseInt(data.substring(commaIndex + 1, closeIndex));
                     char name = data.charAt(0);
                     Data recData = new Data(width, height, name);
-                    root.setRight(new Node(recData));
+                    rightChild = new Node(recData);
                     System.out.println("name: " + name + " width: " + width + " height: " + height);
                 }
                 else {
                     if(input.charAt(i + 1) == '(') {
-                        root.setRight(buildTree(input.substring(i + 2, input.length())));
+                        rightChild = buildTree(input.substring(i + 2, input.length()));
                     }
                     else {
-                        root.setRight(buildTree(input.substring(i + 1, input.length())));
+                        rightChild = buildTree(input.substring(i + 1, input.length()));
                     }
                 }
             }
         }
-
+        int leftW = leftChild.getData().getWidth();
+        int rightW = rightChild.getData().getWidth();
+        int leftH = leftChild.getData().getHeight();
+        int rightH = rightChild.getData().getHeight();
+        if(root.getData().getRelation() == '–') {
+            int width = leftW == rightW ? leftW : 0;
+            root.getData().setWidth(width);
+            root.getData().setHeight(leftH + rightH);
+        }
+        else if(root.getData().getRelation() == '|') {
+            int height = leftH == rightH ? leftH : 0;
+            root.getData().setWidth(leftW + rightW);
+            root.getData().setHeight(height);
+        }
+        root.setLeft(leftChild);
+        root.setRight(rightChild);
         return root;
     }
 
+    public boolean checkRec() {
+        if(!this.isFather())
+            return true;
+        boolean leftIsRec = left.checkRec();
+        boolean rightIsRec = right.checkRec();
+        if(data.relation == '|') {
+            int leftH = left.getData().getHeight();
+            int rightH = right.getData().getHeight();
+            if(leftH == rightH){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(data.relation == '-') {
+            int leftW = left.getData().getWidth();
+            int rightW = right.getData().getWidth();
+            if(leftW == rightW){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return leftIsRec && rightIsRec;
+    }
 
     public Node getLeft() {
         return left;
@@ -120,27 +165,4 @@ public class Node {
         this.data = data;
     }
 
-    public static boolean checkRec(Node root) {
-        if(root.data.relation == '|') {
-            if(root.left.data.height == root.right.data.height) {
-                int recH = root.left.data.height;
-                int recW = root.left.data.width + root.right.data.width;
-                root.data.setHeight(recH);
-                root.data.setWidth(recW);
-                return(true);
-            }
-            return (false);
-        }
-        else if(root.data.relation == '-') {
-            if(root.left.data.width == root.right.data.width) {
-                int recW = root.left.data.width;
-                int recH = root.left.data.height + root.right.data.height;
-                root.data.setWidth(recW);
-                root.data.setHeight(recH);
-                return(true);
-            }
-            return false;
-        }
-        return false;
-    }
 }                                                                                                                   

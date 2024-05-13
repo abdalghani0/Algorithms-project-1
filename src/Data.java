@@ -13,11 +13,13 @@ public class Data {
         if(status == "father") {
             return "{" +
                     "relation=" + relation +
+                    ", width=" + width +
+                    ", height=" + height +
                     "}";
         }
         return "{" +
-                "height=" + height +
-                ", width=" + width +
+                "width=" + width +
+                ", height=" + height +
                 ", name=" + name +
                 '}';
     }
