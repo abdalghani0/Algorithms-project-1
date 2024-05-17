@@ -16,12 +16,12 @@ public class TXTDraw {
     public static void drawBinaryTreeUtil(Node node, FileWriter writer, String prefix, boolean isLeft) throws IOException {
         if (node != null) {
             writer.write(prefix);
-            writer.write(isLeft ? "|+- " : "|-- ");
+            writer.write(isLeft ? "|+-- " : "|--- ");
             //display data
             writer.write( node.isFather()? PrintData("father",node) +"\n" :PrintData("",node)+ "\n");
 //node.isFather()? PrintData("father",node) :PrintData("",node)
-            drawBinaryTreeUtil(node.left, writer, prefix + (isLeft ? "|    " : "    "), true);
-            drawBinaryTreeUtil(node.right, writer,prefix + (isLeft ? "|    " : "    "), false);
+            drawBinaryTreeUtil(node.left, writer, prefix + (isLeft ? "|     " : "      "), true);
+            drawBinaryTreeUtil(node.right, writer,prefix + (isLeft ? "|     " : "      "), false);
         }
     }
 
