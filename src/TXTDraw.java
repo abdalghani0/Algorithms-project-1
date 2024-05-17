@@ -1,6 +1,12 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Stack;
+
 public class TXTDraw {
+
+
 
 
     public static void drawBinaryTree(Node node, String filePath) {
@@ -16,7 +22,7 @@ public class TXTDraw {
     public static void drawBinaryTreeUtil(Node node, FileWriter writer, String prefix, boolean isLeft) throws IOException {
         if (node != null) {
             writer.write(prefix);
-            writer.write(isLeft ? "|+-- " : "|--- ");
+            writer.write(isLeft ? "|--- " : "|+-- ");
             //display data
             writer.write( node.isFather()? PrintData("father",node) +"\n" :PrintData("",node)+ "\n");
 //node.isFather()? PrintData("father",node) :PrintData("",node)
@@ -38,4 +44,114 @@ public class TXTDraw {
                 ", " + node.data.name +
                 '}';
     }
+    public static Node readBinaryTree(String filePath) {
+
+    }
+//    public static Node readBinaryTree(String filePath) {
+//        Node rootNode = null;
+//        Stack<Node> stack = new Stack<>();
+//        try {
+//            FileReader fileReader = new FileReader(filePath);
+//            BufferedReader bufferedReader = new BufferedReader(fileReader);
+//            String line;
+//
+//            while ((line = bufferedReader.readLine()) != null) {
+//                int level = line.lastIndexOf("|") + 1;
+//                String data = line.substring(level + 5).trim();
+//                Node newNode;
+//                if(data.charAt(0) == '-' || data.charAt(0) == '|'){
+//
+//                    char relation = data.charAt(0);
+//                    // Create a new node with the extracted data
+//                    newNode = new Node(new Data(relation));
+//                } else{
+//                    String[] values = data.split(", ");
+//                    if (values.length >= 3) {
+//                        int height = Integer.parseInt(values[0].substring(2));
+//                        int width = Integer.parseInt(values[1].substring(2));
+//                        char name = values[2].charAt(0);
+//
+//                        // Create a new node with the extracted data
+//                        newNode = new Node(new Data(height, width, name));
+//                    } else {
+//                        // Handle the case where the data does not contain enough elements
+//                        // You can choose to skip this line or handle it differently based on your requirements
+//                        System.out.println("that error ");
+//                    }
+//                }
+//
+//                while (stack.size() >= level) {
+//                    stack.pop();
+//                }
+//
+//                if (!stack.isEmpty()) {
+//                    Node parent = stack.peek();
+//                    if (parent.left == null) {
+//                        parent.left = newNode;
+//                    } else {
+//                        parent.right = newNode;
+//                    }
+//                } else {
+//                    rootNode = newNode;
+//                }
+//
+//                stack.push(newNode);
+//            }
+//
+//            bufferedReader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return rootNode;
+//    }
+//    public static Node readBinaryTree(String filePath) {
+//        Node rootNode = null;
+//        try {
+//            FileReader fileReader = new FileReader(filePath);
+//            BufferedReader bufferedReader = new BufferedReader(fileReader);
+//            String line;
+//
+//            while ((line = bufferedReader.readLine()) != null) {
+//                // Parse the line to extract node data
+//                // Assuming the format of each line is "|--- {data}"
+//                String[] parts = line.split("\\{");
+//                char side = parts[0].charAt(1);
+//                System.out.println( "the side is :"+side);
+//                String data = parts[1].replace("}", "");
+//
+//                // Extract the individual values from the data
+//                if(data.charAt(0) == '-' || data.charAt(0) == '|'){
+//                    char relation = data.charAt(0);
+//
+//                    // Create a new node with the extracted data
+//                    Node newNode = new Node(new Data(relation));
+//                } else{
+//                    String[] values = data.split(", ");
+//                    int height = Integer.parseInt(values[0].substring(2));
+//                    int width = Integer.parseInt(values[1].substring(2));
+//                    char name = values[2].charAt(0);
+//
+//                    // Create a new node with the extracted data
+//                    Node newNode = new Node(new Data(height, width, name));
+//                }
+//
+////                if (rootNode == null) {
+////                    rootNode = newNode;
+////                }
+//            }
+//
+//            bufferedReader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // Fix the relations between tree nodes (example logic below)
+////        if (rootNode != null) {
+////            rootNode.left = new Node(new Data(0, 0, '-'));
+////            rootNode.right = new Node(new Data(0, 0, '-'));
+////        }
+//
+//        return rootNode;
+//    }
 }
