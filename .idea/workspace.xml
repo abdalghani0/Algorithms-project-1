@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="316e740e-0f0b-4193-9110-c7ee9d688dc7" name="Changes" comment="done with the display data in the txt">
-      <change afterPath="$PROJECT_DIR$/Algorithms-project-1" afterDir="false" />
+    <list default="true" id="316e740e-0f0b-4193-9110-c7ee9d688dc7" name="Changes" comment="no comment &quot;&gt;_&lt;&quot;">
+      <change afterPath="$PROJECT_DIR$/out/production/project1/data2.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/project1/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project1/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project1/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project1/Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Node.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TXTDraw.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/TXTDraw.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +90,28 @@
       <option name="project" value="LOCAL" />
       <updated>1715920988598</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="just a little change in display">
+      <created>1715921690153</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1715921690153</updated>
+    </task>
+    <task id="LOCAL-00004" summary="the two fails in readBinaryTree funciton ._.">
+      <created>1715974438280</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1715974438280</updated>
+    </task>
+    <task id="LOCAL-00005" summary="no comment &quot;&gt;_&lt;&quot;">
+      <created>1716067382247</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1716067382247</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -104,7 +128,10 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="creating txt draw class" />
     <MESSAGE value="done with the display data in the txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="done with the display data in the txt" />
+    <MESSAGE value="just a little change in display" />
+    <MESSAGE value="the two fails in readBinaryTree funciton ._." />
+    <MESSAGE value="no comment &quot;&gt;_&lt;&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="no comment &quot;&gt;_&lt;&quot;" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

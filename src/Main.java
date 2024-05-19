@@ -9,5 +9,8 @@ public class Main {
         System.out.println("Tree: ");
         root.printTree(0, "root");
         TXTDraw.drawBinaryTree(root,"data.txt");
+        Node ne = TXTDraw.readBinaryTree("data.txt");
+        TXTDraw.drawBinaryTree(ne,"data2.txt");
+
     }
 }

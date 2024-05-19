@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Stack;
 
 public class TXTDraw {
@@ -22,12 +19,12 @@ public class TXTDraw {
     public static void drawBinaryTreeUtil(Node node, FileWriter writer, String prefix, boolean isLeft) throws IOException {
         if (node != null) {
             writer.write(prefix);
-            writer.write(isLeft ? "|--- " : "|+-- ");
+            writer.write(isLeft ? ")->> " : ")+>> ");
             //display data
             writer.write( node.isFather()? PrintData("father",node) +"\n" :PrintData("",node)+ "\n");
 //node.isFather()? PrintData("father",node) :PrintData("",node)
-            drawBinaryTreeUtil(node.left, writer, prefix + (isLeft ? "|     " : "      "), true);
-            drawBinaryTreeUtil(node.right, writer,prefix + (isLeft ? "|     " : "      "), false);
+            drawBinaryTreeUtil(node.left, writer, prefix + (isLeft ? ")     " : "      "), true);
+            drawBinaryTreeUtil(node.right, writer,prefix + (isLeft ? ")     " : "      "), false);
         }
     }
 
@@ -46,6 +43,76 @@ public class TXTDraw {
     }
     public static Node readBinaryTree(String filePath) {
 
+        Node theRoot = null;
+        try{
+            FileReader fileReader = new FileReader(filePath);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            int i =0 ;
+            while((line = bufferedReader.readLine())!= null){
+
+                i++;
+                System.out.println("loop"+ i);
+                int level = line.lastIndexOf(")") + 1;
+                String data = line.substring(level + 5).trim();
+                System.out.println(data);
+
+                Node newNode = null;
+                if(data.charAt(0) == '-' || data.charAt(0) == '|'){
+                    char relation = data.charAt(0);
+                    // Create a new node with the extracted data
+                    newNode = new Node(new Data(relation));
+                    String line2;
+                    while((line2 = bufferedReader.readLine())!= null){
+                        Node newNodeL = null;
+                        Node newNodeR = null;
+                        int level2 = line.lastIndexOf(")") + 1;
+
+                        if(level2 ==level+1){
+                            String data2 = line.substring(level2 + 5).trim();
+
+                            if((data2.charAt(0) == '-' || data2.charAt(0) == '|') && line.contains("-")){
+                                char relation2 = data2.charAt(0);
+                                // Create a new node with the extracted data
+                                newNodeL = new Node(new Data(relation2));
+                                newNode.left = newNodeL ;
+                            }
+                            else if((data2.charAt(0) == '-' || data2.charAt(0) == '|') && line.contains("+")){
+                                char relation2 = data2.charAt(0);
+                                // Create a new node with the extracted data
+                                newNodeR = new Node(new Data(relation2));
+                                newNode.right = newNodeR ;
+                            }
+                            else if(line.contains("-")){
+                                String[] values = data2.split(", ");
+                                int height = Integer.parseInt(values[0].substring(2));
+                                int width = Integer.parseInt(values[1].substring(2));
+                                char name = values[2].charAt(0);
+
+                                // Create a new node with the extracted data
+                                newNodeL = new Node(new Data(height, width, name));
+                                newNode.left = newNodeL;
+                            }else if(line.contains("+")){
+                                String[] values = data2.split(", ");
+                                int height = Integer.parseInt(values[0].substring(2));
+                                int width = Integer.parseInt(values[1].substring(2));
+                                char name = values[2].charAt(0);
+
+                                // Create a new node with the extracted data
+                                newNodeR = new Node(new Data(height, width, name));
+                                newNode.right = newNodeR;
+                            }
+                        }
+                    }
+                }
+            if(theRoot == null){
+                theRoot = newNode ;
+            }
+            }
+
+        }catch(IOException e){e.printStackTrace();}
+
+        return theRoot;
     }
 //    public static Node readBinaryTree(String filePath) {
 //        Node rootNode = null;

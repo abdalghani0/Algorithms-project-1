@@ -1,5 +1,6 @@
 public class Node {
     Data data;
+    int fake;
     Node left;
     Node right;
     Node(Data data) {
