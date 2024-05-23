@@ -1,7 +1,14 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Node {
     Data data;
     Node left;
     Node right;
+    Node father;
+    int maxNumberOfRecs = 0;
     Node(Data data) {
         this.data = data;
     }
@@ -12,6 +19,122 @@ public class Node {
         return false;
     }
     Node () {}
+
+    public void drawTree(String path) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+            drawRootToFile(this, writer);
+            writer.close();
+            System.out.println("Rectangles have been drawn to the file: ");
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+    }
+
+    private void drawRootToFile(Node node, BufferedWriter writer) throws IOException {
+        if (node == null) {
+            return;
+        }
+
+        if (node.checkRec()) {
+            int width = node.getData().getWidth();
+            int height = node.getData().getHeight();
+
+            // Draw the top side of the rectangle
+            for (int i = 0; i < width; i++) {
+                writer.write("-");
+            }
+            writer.write("\n");
+
+            // Draw the sides of the rectangle
+            for (int i = 0; i < height - 2; i++) {
+                writer.write("|");
+                for (int j = 0; j < width-2; j++) {
+                    writer.write(" ");
+                }
+                writer.write("|\n");
+            }
+
+            // Draw the bottom side of the rectangle
+            for (int i = 0; i < width; i++) {
+                writer.write("-");
+            }
+            writer.write("\n\n");
+        }
+    }
+
+    public static void drawChildren(Node root, List<String> lines, boolean isRight) throws IOException {
+        if(root == null || root.getLeft() == null || root.getRight() == null )
+            return;
+        BufferedWriter writer = new BufferedWriter(new FileWriter("data.txt"));
+        int leftWidth = root.getLeft().getData().getWidth();
+        int leftHeight = root.getLeft().getData().getHeight();
+        int brotherWidth = 0;
+        int brotherHeight = 0;
+        int uncleWidth = 0;
+        int uncleHeight = 0;
+        char relation = root.getData().getRelation();
+
+        if(root.father != null) {
+            brotherWidth = isRight ? root.father.getLeft().getData().getWidth() : 0;
+            brotherHeight = root.father.getLeft().getData().getHeight();
+        }
+        if(root.father != null && root.father.father != null) {
+            uncleWidth = root.father.father.getLeft().getData().getWidth();
+            uncleHeight = root.father.father.getLeft().getData().getHeight();
+        }
+        System.out.println("rel: " + relation + " unclewidth " + uncleWidth + " uncleheight " + uncleHeight + " brotherHeight " + brotherHeight + " brotherWidth " + brotherWidth);
+        int xOff, yOff;
+        if(relation == '-') {
+            String newLine = "|";
+            for (int i = 0; i < brotherWidth - 1; i++) {
+                newLine += " ";
+            }
+            for (int i = brotherWidth; i < brotherWidth + leftWidth - 1; i++) {
+                newLine += "-";
+            }
+            for (int i =  brotherWidth + leftWidth - 1; i < lines.get(0).length() - 1; i++) {
+                newLine += " ";
+            }
+            newLine += "|";
+            lines.set(uncleHeight + leftHeight, newLine);
+            for (int i = 0; i < lines.size() - 1; i++) {
+                writer.write(lines.get(i));
+                writer.newLine();
+            }
+        }
+        else if(relation == '|') {
+            yOff = 0;
+            xOff = 0;
+            if(root.father != null) {
+                if(root.father.getData().getRelation() == '-' && isRight) {
+                    yOff = brotherHeight;
+                }
+                else if(root.father.getData().getRelation() == '|' && isRight) {
+                    yOff = 0;
+                }
+                xOff = root.father.getData().getRelation() == '-' ? 0 : brotherWidth;
+            }
+            for (int i = yOff; i <= yOff + leftHeight ; i++) {
+                String line = lines.get(i);
+                System.out.println(line);
+                if(line.length() > 0 ) {
+                    String leftSub = line.substring(0, leftWidth + xOff - 1);
+                    String rightSub = line.substring(leftWidth + xOff);
+                    line = leftSub + "|" + rightSub;
+                    lines.set(i, line);
+                }
+            }
+            for (int i = 0; i < lines.size() - 1; i++) {
+                writer.write(lines.get(i));
+                writer.newLine();
+            }
+        }
+        writer.close();
+        drawChildren(root.getLeft(), lines, false);
+        drawChildren(root.getRight(), lines, true);
+    }
 
     public void printTree(int level, String label) {
         if (this == null) {
@@ -46,7 +169,7 @@ public class Node {
             else if(input.charAt(i) == ')') {
                 count--;
             }
-            if(count == 0 && (input.charAt(i) == '|' || input.charAt(i) == '–')){
+            if(count == 0 && (input.charAt(i) == '|' || input.charAt(i) == '-')){
                 root = new Node(new Data(input.charAt(i)));
                 System.out.println("Father: " + input.charAt(i));
                 System.out.println("Left child: " + input.substring(0, i));
@@ -66,7 +189,6 @@ public class Node {
                 else {
                     if(input.charAt(0) == '(') {
                         leftChild = buildTree(input.substring(1, i));
-
                     }
                     else {
                         leftChild = buildTree(input.substring(0, i));
@@ -98,7 +220,7 @@ public class Node {
         int rightW = rightChild.getData().getWidth();
         int leftH = leftChild.getData().getHeight();
         int rightH = rightChild.getData().getHeight();
-        if(root.getData().getRelation() == '–') {
+        if(root.getData().getRelation() == '-') {
             int width = leftW == rightW ? leftW : 0;
             root.getData().setWidth(width);
             root.getData().setHeight(leftH + rightH);
@@ -108,6 +230,9 @@ public class Node {
             root.getData().setWidth(leftW + rightW);
             root.getData().setHeight(height);
         }
+        Node father = root;
+        leftChild.father = father;
+        rightChild.father = father;
         root.setLeft(leftChild);
         root.setRight(rightChild);
         return root;
@@ -118,6 +243,15 @@ public class Node {
             return true;
         boolean leftIsRec = left.checkRec();
         boolean rightIsRec = right.checkRec();
+        if(leftIsRec) {
+            left.maxNumberOfRecs++;
+            maxNumberOfRecs += left.maxNumberOfRecs;
+        }
+
+        if(rightIsRec){
+            right.maxNumberOfRecs++;
+            maxNumberOfRecs += right.maxNumberOfRecs;
+        }
         if(data.relation == '|') {
             int leftH = left.getData().getHeight();
             int rightH = right.getData().getHeight();
@@ -138,7 +272,12 @@ public class Node {
                 return false;
             }
         }
+
         return leftIsRec && rightIsRec;
+    }
+
+    public void rotateTree() {
+
     }
 
     public Node getLeft() {
