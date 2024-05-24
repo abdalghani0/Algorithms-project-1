@@ -64,10 +64,11 @@ public class Node {
         }
     }
 
-    public static void drawChildren(Node root, List<String> lines, boolean isRight) throws IOException {
+    public static void drawChildren(Node root, String path, List<String> lines, boolean isRight) throws IOException {
         if(root == null || root.getLeft() == null || root.getRight() == null )
             return;
-        BufferedWriter writer = new BufferedWriter(new FileWriter("data.txt"));
+        System.out.println(root.toString());
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path));
         int leftWidth = root.getLeft().getData().getWidth();
         int leftHeight = root.getLeft().getData().getHeight();
         int brotherWidth = 0;
@@ -84,20 +85,36 @@ public class Node {
             uncleWidth = root.father.father.getLeft().getData().getWidth();
             uncleHeight = root.father.father.getLeft().getData().getHeight();
         }
-        int xOff, yOff;
+        int xOff = 0, yOff = 0;
         if(relation == '-') {
+            if(root.father != null) {
+                if(root.father.getData().getRelation() == '|') {
+                    xOff = brotherWidth;
+                }
+                if(isRight && root.father.getData().getRelation() == '-') {
+                    yOff = brotherHeight;
+                    if(root.father.father != null && root.father.father.getData().getRelation() == '|') {
+                        xOff = uncleWidth;
+                        System.out.println(xOff);
+                    }
+                }
+                else {
+                    yOff = uncleHeight;
+                    System.out.println("uncle is yoff "+ yOff);
+                }
+            }
             String newLine = "|";
-            for (int i = 0; i < brotherWidth - 1; i++) {
+            for (int i = 0; i < xOff - 2; i++) {
                 newLine += " ";
             }
-            for (int i = brotherWidth; i < brotherWidth + leftWidth - 1; i++) {
+            for (int i = xOff; i < xOff + leftWidth; i++) {
                 newLine += "-";
             }
-            for (int i =  brotherWidth + leftWidth - 1; i < lines.get(0).length() - 1; i++) {
+            for (int i =  xOff + leftWidth; i < lines.get(0).length() - 2; i++) {
                 newLine += " ";
             }
             newLine += "|";
-            lines.set(uncleHeight + leftHeight, newLine);
+            lines.set(yOff + leftHeight, newLine);
             for (int i = 0; i < lines.size() - 1; i++) {
                 writer.write(lines.get(i));
                 writer.newLine();
@@ -130,8 +147,8 @@ public class Node {
             }
         }
         writer.close();
-        drawChildren(root.getLeft(), lines, false);
-        drawChildren(root.getRight(), lines, true);
+        drawChildren(root.getLeft(), path, lines, false);
+        drawChildren(root.getRight(), path, lines, true);
     }
 
     public void printTree(int level, String label) {
@@ -169,9 +186,6 @@ public class Node {
             }
             if(count == 0 && (input.charAt(i) == '|' || input.charAt(i) == '-')){
                 root = new Node(new Data(input.charAt(i)));
-                System.out.println("Father: " + input.charAt(i));
-                System.out.println("Left child: " + input.substring(0, i));
-                System.out.println("right child: " + input.substring(i + 1, input.length()));
                 if(input.charAt(i-1) == ']') {
                     String data = input.substring(0, i);
                     int commaIndex = data.indexOf(",");
@@ -182,7 +196,6 @@ public class Node {
                     char name = data.charAt(0);
                     Data recData = new Data(width, height, name);
                     leftChild = new Node(recData);
-                    System.out.println("name: " + name + " width: " + width + " height: " + height);
                 }
                 else {
                     if(input.charAt(0) == '(') {
@@ -202,7 +215,6 @@ public class Node {
                     char name = data.charAt(0);
                     Data recData = new Data(width, height, name);
                     rightChild = new Node(recData);
-                    System.out.println("name: " + name + " width: " + width + " height: " + height);
                 }
                 else {
                     if(input.charAt(i + 1) == '(') {
@@ -307,6 +319,30 @@ public class Node {
         return leftIsRec && rightIsRec;
     }
 
+    public static void rotateRectangle(Node tree) {
+        if(tree == null)
+            return;
+        char relation = tree.getData().getRelation();
+        int width = tree.getData().getWidth();
+        int height = tree.getData().getHeight();
+        if(tree.isFather()) {
+            Node left = tree.getLeft();
+            Node right = tree.getRight();
+            if(relation == '|') {
+                tree.getData().setRelation('-');
+            }
+            else {
+                tree.getData().setRelation('|');
+                tree.setRight(left);
+                tree.setLeft(right);
+            }
+        }
+        tree.getData().setWidth(height);
+        tree.getData().setHeight(width);
+        rotateRectangle(tree.getLeft());
+        rotateRectangle(tree.getRight());
+    }
+
     public Node getLeft() {
         return left;
     }
@@ -331,4 +367,10 @@ public class Node {
         this.data = data;
     }
 
-}                                                                                                                   
+    @Override
+    public String toString() {
+        return "Node{" +
+                "rel=" + data.getRelation() +
+                '}';
+    }
+}
