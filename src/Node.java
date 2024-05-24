@@ -84,7 +84,6 @@ public class Node {
             uncleWidth = root.father.father.getLeft().getData().getWidth();
             uncleHeight = root.father.father.getLeft().getData().getHeight();
         }
-        System.out.println("rel: " + relation + " unclewidth " + uncleWidth + " uncleheight " + uncleHeight + " brotherHeight " + brotherHeight + " brotherWidth " + brotherWidth);
         int xOff, yOff;
         if(relation == '-') {
             String newLine = "|";
@@ -118,7 +117,6 @@ public class Node {
             }
             for (int i = yOff; i <= yOff + leftHeight ; i++) {
                 String line = lines.get(i);
-                System.out.println(line);
                 if(line.length() > 0 ) {
                     String leftSub = line.substring(0, leftWidth + xOff - 1);
                     String rightSub = line.substring(leftWidth + xOff);
@@ -157,7 +155,7 @@ public class Node {
             left.printTree(level+1, "left");
         }
     }
-    public static Node buildTree(String input) {
+    public static Node ImportTreeFromString(String input) {
         int count = 0;
         Node root = new Node();
         Node rightChild = new Node();
@@ -188,10 +186,10 @@ public class Node {
                 }
                 else {
                     if(input.charAt(0) == '(') {
-                        leftChild = buildTree(input.substring(1, i));
+                        leftChild = ImportTreeFromString(input.substring(1, i));
                     }
                     else {
-                        leftChild = buildTree(input.substring(0, i));
+                        leftChild = ImportTreeFromString(input.substring(0, i));
                     }
                 }
                 if(input.charAt(i+2) == '['){
@@ -208,10 +206,10 @@ public class Node {
                 }
                 else {
                     if(input.charAt(i + 1) == '(') {
-                        rightChild = buildTree(input.substring(i + 2, input.length()));
+                        rightChild = ImportTreeFromString(input.substring(i + 2, input.length()));
                     }
                     else {
-                        rightChild = buildTree(input.substring(i + 1, input.length()));
+                        rightChild = ImportTreeFromString(input.substring(i + 1, input.length()));
                     }
                 }
             }
@@ -236,6 +234,39 @@ public class Node {
         root.setLeft(leftChild);
         root.setRight(rightChild);
         return root;
+    }
+
+    public static String exportStringFromTree(Node tree) {
+        if(tree == null || !tree.isFather())
+            return "";
+        String stringTree = "";
+        char relation = tree.getData().getRelation();
+        Node leftChild = tree.getLeft();
+        Node rightChild = tree.getRight();
+        String leftChildString = "";
+        String rightChildString = "";
+        if(tree.getLeft().isFather()) {
+            leftChildString = "(" + exportStringFromTree(tree.getLeft()) + ")";
+        }
+        else {
+            leftChildString =
+                    leftChild.getData().getName()
+                    + "[" + leftChild.getData().getWidth()
+                    + "," + leftChild.getData().getHeight()
+                    + "]";
+        }
+        if(tree.getRight().isFather()) {
+            rightChildString = "(" + exportStringFromTree(tree.getRight()) + ")";
+        }
+        else {
+            rightChildString =
+                    rightChild.getData().getName()
+                            + "[" + rightChild.getData().getWidth()
+                            + "," + rightChild.getData().getHeight()
+                            + "]";
+        }
+        stringTree = leftChildString + relation +  rightChildString;
+        return  stringTree;
     }
 
     public boolean checkRec() {
@@ -274,10 +305,6 @@ public class Node {
         }
 
         return leftIsRec && rightIsRec;
-    }
-
-    public void rotateTree() {
-
     }
 
     public Node getLeft() {
