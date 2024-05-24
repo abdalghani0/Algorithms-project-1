@@ -10,7 +10,7 @@ public class Data {
     }
 
     public String printData(String status) {
-        if(status == "father") {
+        if(status.equals("father")) {
             return "{" +
                     "relation=" + relation +
                     ", width=" + width +
