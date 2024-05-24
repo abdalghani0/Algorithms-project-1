@@ -64,39 +64,11 @@ public class AssetFunctions {
         //initializing all used variables
         int leftWidth = root.getLeft().getData().getWidth();
         int leftHeight = root.getLeft().getData().getHeight();
-        int brotherWidth = 0;
-        int brotherHeight = 0;
-        int uncleWidth = 0;
-        int uncleHeight = 0;
         char relation = root.getData().getRelation();
-        if(root.father != null) {
-            brotherWidth = isRight ? root.father.getLeft().getData().getWidth() : 0;
-            brotherHeight = root.father.getLeft().getData().getHeight();
-        }
-        if(root.father != null && root.father.father != null) {
-            uncleWidth = root.father.father.getLeft().getData().getWidth();
-            uncleHeight = root.father.father.getLeft().getData().getHeight();
-        }
-        int xOffset = 0, yOffset = 0;
+        int[] xOffAndYOff = calculateXOffAndYOff(root, isRight, relation);
+        int xOffset = xOffAndYOff[0], yOffset = xOffAndYOff[1];
 
         if(relation == '-') {
-            //calculating xOffset and yOffset to know where to draw the horizontal line
-            if(root.father != null) {
-                if(root.father.getData().getRelation() == '|') {
-                    xOffset = brotherWidth;
-                }
-                if(isRight && root.father.getData().getRelation() == '-') {
-                    yOffset = brotherHeight;
-                    if(root.father.father != null && root.father.father.getData().getRelation() == '|') {
-                        xOffset = uncleWidth;
-                        System.out.println(xOffset);
-                    }
-                }
-                else {
-                    yOffset = uncleHeight;
-                }
-            }
-
             //drawing the horizontal line
             String newLine = "|" + " ".repeat(Math.max(0, xOffset - 2)) +
                     "-".repeat(Math.max(0, xOffset + leftWidth - xOffset)) +
@@ -118,14 +90,6 @@ public class AssetFunctions {
         }
 
         else if(relation == '|') {
-            //calculating xOffset and yOffset to know where to draw the horizontal line
-            if(root.father != null) {
-                if(root.father.getData().getRelation() == '-' && isRight) {
-                    yOffset = brotherHeight;
-                }
-                xOffset = root.father.getData().getRelation() == '-' ? 0 : brotherWidth;
-            }
-
             //drawing the vertical line using a for loop
             for (int i = yOffset; i <= yOffset + leftHeight ; i++) {
                 String line = fileLines.get(i);
@@ -158,6 +122,46 @@ public class AssetFunctions {
         //recursively draw all rectangles
         drawChildren(root.getLeft(), path, fileLines, false);
         drawChildren(root.getRight(), path, fileLines, true);
+    }
+
+    public static int[] calculateXOffAndYOff(Node root, boolean isRight, char relation) {
+        int xOffset = 0, yOffset = 0, brotherWidth = 0, brotherHeight = 0, uncleWidth = 0, uncleHeight = 0;
+        if(root.father != null) {
+            brotherWidth = isRight ? root.father.getLeft().getData().getWidth() : 0;
+            brotherHeight = root.father.getLeft().getData().getHeight();
+        }
+        if(root.father != null && root.father.father != null) {
+            uncleWidth = root.father.father.getLeft().getData().getWidth();
+            uncleHeight = root.father.father.getLeft().getData().getHeight();
+        }
+
+        if(relation == '-') {
+            //calculating xOffset and yOffset to know where to draw the horizontal line
+            if (root.father != null) {
+                if (root.father.getData().getRelation() == '|') {
+                    xOffset = brotherWidth;
+                }
+                if (isRight && root.father.getData().getRelation() == '-') {
+                    yOffset = brotherHeight;
+                    if (root.father.father != null && root.father.father.getData().getRelation() == '|') {
+                        xOffset = uncleWidth;
+                    }
+                } else {
+                    yOffset = uncleHeight;
+                }
+            }
+        }
+        else if(relation == '|') {
+            //calculating xOffset and yOffset to know where to draw the horizontal line
+            if (root.father != null) {
+                if (root.father.getData().getRelation() == '-' && isRight) {
+                    yOffset = brotherHeight;
+                }
+                xOffset = root.father.getData().getRelation() == '-' ? 0 : brotherWidth;
+            }
+        }
+
+        return new int[]{xOffset, yOffset};
     }
 
     public static Node ImportTreeFromString(String input) {
@@ -292,7 +296,4 @@ public class AssetFunctions {
         rotateRectangle(tree.getLeft());
         rotateRectangle(tree.getRight());
     }
-
-
-
 }
