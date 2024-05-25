@@ -13,17 +13,17 @@ public class Main {
         if(root.checkRec()){
             System.out.println("Is a rectangle");
             System.out.println("Max number of recs: " + (root.maxNumberOfRecs + 1));
+
+            //draw rectangle
+            AssetFunctions.drawTreeToFile("rectangle.txt", root);
+
+            //draw rotated rectangle
+            AssetFunctions.rotateRectangle(root);
+            AssetFunctions.drawTreeToFile("rotatedRectangle.txt", root);
         }
         else {
             System.out.println("Not a rectangle");
             System.out.println("Max number of recs: " + root.maxNumberOfRecs);
         }
-
-        //draw rectangle
-        AssetFunctions.drawTreeToFile("rectangle.txt", root);
-
-        //draw rotated rectangle
-        AssetFunctions.rotateRectangle(root);
-        AssetFunctions.drawTreeToFile("rotatedRectangle.txt", root);
     }
 }

@@ -39,28 +39,34 @@ public class Node {
     public boolean checkRec() {
         if(!this.isFather())
             return true;
-        boolean leftIsRec = left.checkRec();
-        boolean rightIsRec = right.checkRec();
-        if(leftIsRec) {
-            left.maxNumberOfRecs++;
-            maxNumberOfRecs += left.maxNumberOfRecs;
-        }
 
-        if(rightIsRec){
-            right.maxNumberOfRecs++;
-            maxNumberOfRecs += right.maxNumberOfRecs;
-        }
+        boolean leftIsRec = false;
+        boolean rightIsRec = false;
+
         if(data.relation == '|') {
             int leftH = left.getData().getHeight();
             int rightH = right.getData().getHeight();
-            return leftH == rightH;
+            if(leftH == rightH){
+                leftIsRec = left.checkRec();
+                rightIsRec = right.checkRec();
+            }
         }
         else if(data.relation == '-') {
             int leftW = left.getData().getWidth();
             int rightW = right.getData().getWidth();
-            return leftW == rightW;
+            if(leftW == rightW){
+                leftIsRec = left.checkRec();
+                rightIsRec = right.checkRec();
+            }
         }
-
+        if(leftIsRec) {
+            left.maxNumberOfRecs++;
+            maxNumberOfRecs += left.maxNumberOfRecs;
+        }
+        if(rightIsRec){
+            right.maxNumberOfRecs++;
+            maxNumberOfRecs += right.maxNumberOfRecs;
+        }
         return leftIsRec && rightIsRec;
     }
 

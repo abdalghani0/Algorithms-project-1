@@ -13,7 +13,7 @@ public class AssetFunctions {
             List<String> fileLines = reader.lines().collect(Collectors.toList());
             drawChildren(tree, path, fileLines, false);
 
-            System.out.println("Rectangles have been drawn to the file: ");
+            System.out.println("Rectangles have been drawn to the file: " + path);
             System.out.println();
         } catch (IOException e) {
             System.out.println("An error occurred while writing to the file.");
