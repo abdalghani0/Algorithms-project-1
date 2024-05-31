@@ -67,6 +67,14 @@ public class Node {
             right.maxNumberOfRecs++;
             maxNumberOfRecs += right.maxNumberOfRecs;
         }
+        if(leftIsRec && rightIsRec) {
+            if(right.isFather()) {
+                maxNumberOfRecs ++;
+            }
+            if(left.isFather()) {
+                maxNumberOfRecs ++;
+            }
+        }
         return leftIsRec && rightIsRec;
     }
 
@@ -88,6 +96,10 @@ public class Node {
 
     public Data getData() {
         return data;
+    }
+
+    public void setData(Data data) {
+        this.data = data;
     }
 
     @Override

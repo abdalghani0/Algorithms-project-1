@@ -9,6 +9,10 @@ public class Data {
         this.name = name;
     }
 
+    public Data() {
+
+    }
+
     public String printData(String status) {
         if(status.equals("father")) {
             return "{" +

@@ -1,17 +1,38 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AssetFunctions {
-    public static void drawTreeToFile(String path, Node tree) {
+
+    public static void exportTreeToFile(String path, Node tree) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+            drawRootToFile(path, tree);
+            List<String> fileLines = reader.lines().collect(Collectors.toList());
+            List<String> newFileLines = AssetFunctions.drawChildren(tree, fileLines);
+            //writing the new file lines in the file
+            for (String line : newFileLines) {
+                writer.write(line);
+                writer.newLine();
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void drawRootToFile(String path, Node tree) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(path));
             BufferedReader reader = new BufferedReader(new FileReader(path));
 
-            drawRootToFile(tree, writer);
+            drawRoot(tree, writer);
             writer.close();
-            List<String> fileLines = reader.lines().collect(Collectors.toList());
-            drawChildren(tree, path, fileLines, false);
+
 
             System.out.println("Rectangles have been drawn to the file: " + path);
             System.out.println();
@@ -21,150 +42,164 @@ public class AssetFunctions {
         }
     }
 
-    private static void drawRootToFile(Node node, BufferedWriter writer) throws IOException {
-        if (node == null) {
-            return;
+    private static void drawRoot(Node node, BufferedWriter writer) throws IOException {
+        int width = node.getData().getWidth();
+        int height = node.getData().getHeight();
+
+        // Draw the top side of the rectangle
+        for (int i = 0; i < width; i++) {
+            writer.write("-");
+        }
+        writer.write("\n");
+
+        // Draw the sides of the rectangle
+        for (int i = 0; i < height - 2; i++) {
+            writer.write("|");
+            for (int j = 0; j < width-2; j++) {
+                writer.write(" ");
+            }
+            writer.write("|\n");
         }
 
-        if (node.checkRec()) {
-            int width = node.getData().getWidth();
-            int height = node.getData().getHeight();
-
-            // Draw the top side of the rectangle
-            for (int i = 0; i < width; i++) {
-                writer.write("-");
-            }
-            writer.write("\n");
-
-            // Draw the sides of the rectangle
-            for (int i = 0; i < height - 2; i++) {
-                writer.write("|");
-                for (int j = 0; j < width-2; j++) {
-                    writer.write(" ");
-                }
-                writer.write("|\n");
-            }
-
-            // Draw the bottom side of the rectangle
-            for (int i = 0; i < width; i++) {
-                writer.write("-");
-            }
-            writer.write("\n\n");
+        // Draw the bottom side of the rectangle
+        for (int i = 0; i < width; i++) {
+            writer.write("-");
         }
     }
 
-    public static void drawChildren(Node root, String path, List<String> fileLines, boolean isRight) throws IOException {
-        //stop condition
-        if(root == null || root.getLeft() == null || root.getRight() == null )
-            return;
-
-        System.out.println(root);
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path));
-
-        //initializing all used variables
-        int leftWidth = root.getLeft().getData().getWidth();
-        int leftHeight = root.getLeft().getData().getHeight();
+    public static List<String> drawChildren(Node root, List<String> fileLines) {
         char relation = root.getData().getRelation();
-        int[] xOffAndYOff = calculateXOffAndYOff(root, isRight, relation);
-        int xOffset = xOffAndYOff[0], yOffset = xOffAndYOff[1];
+        List<String> leftSubList;
+        List<String> rightSubList;
+        List<String> newFileLines = new ArrayList<>();
 
         if(relation == '-') {
-            //drawing the horizontal line
-            String newLine = "|" + " ".repeat(Math.max(0, xOffset - 2)) +
-                    "-".repeat(Math.max(0, xOffset + leftWidth - xOffset)) +
-                    " ".repeat(Math.max(0, fileLines.get(0).length() - 2 - (xOffset + leftWidth))) +
-                    "|";
-            fileLines.set(yOffset + leftHeight, newLine);
-
-            //placing the names of rectangles
-            if(!root.getLeft().isFather()) {
-                StringBuilder nameLine = new StringBuilder(fileLines.get(yOffset + 1));
-                nameLine.setCharAt(xOffset + 1, root.getLeft().getData().getName());
-                fileLines.set(yOffset + 1, nameLine.toString());
-            }
-            if(!root.getRight().isFather()) {
-                StringBuilder nameLine = new StringBuilder(fileLines.get(yOffset + leftHeight + 1));
-                nameLine.setCharAt(xOffset + 1, root.getRight().getData().getName());
-                fileLines.set(yOffset + leftHeight + 1, nameLine.toString());
-            }
+            int leftWidth = root.getLeft().getData().getWidth();
+            int leftHeight = root.getLeft().getData().getHeight();
+            String newLine = "|" + "-".repeat(leftWidth - 2) + "|";
+            fileLines.set(leftHeight, newLine);
+            leftSubList = drawChildren(root.getLeft(), fileLines.subList(0,leftHeight));
+            rightSubList = drawChildren(root.getRight(), fileLines.subList(leftHeight,fileLines.size()));
+            newFileLines.addAll(leftSubList);
+            newFileLines.addAll(rightSubList);
         }
-
         else if(relation == '|') {
-            //drawing the vertical line using a for loop
-            for (int i = yOffset; i <= yOffset + leftHeight ; i++) {
+            int leftWidth = root.getLeft().getData().getWidth();
+            int leftHeight = root.getLeft().getData().getHeight();
+            for (int i = 1; i < fileLines.size() ; i++) {
                 String line = fileLines.get(i);
                 if(line.length() > 0 ) {
-                    String leftSub = line.substring(0, leftWidth + xOffset - 1);
-                    String rightSub = line.substring(leftWidth + xOffset);
+                    String leftSub = line.substring(0, leftWidth-1);
+                    String rightSub = line.substring(leftWidth);
                     line = leftSub + "|" + rightSub;
                     fileLines.set(i, line);
                 }
             }
-
-            //placing the names of rectangles
-            StringBuilder nameLine = new StringBuilder(fileLines.get(yOffset + 1));
-            if(!root.getLeft().isFather()) {
-                nameLine.setCharAt(xOffset + 1, root.getLeft().getData().getName());
+            List<String> leftLines = new ArrayList<>();
+            List<String> rightLines = new ArrayList<>();
+            for (String line : fileLines) {
+                if(line.length() > 0) {
+                    leftLines.add(line.substring(0, leftWidth));
+                    rightLines.add(line.substring(leftWidth));
+                }
             }
-            if(!root.getRight().isFather()) {
-                nameLine.setCharAt(xOffset + leftWidth + 1, root.getRight().getData().getName());
+            leftSubList = drawChildren(root.getLeft(), leftLines);
+            rightSubList = drawChildren(root.getRight(), rightLines);
+            for (int i = 0; i < fileLines.size(); i++) {
+                newFileLines.add(leftSubList.get(i) + rightSubList.get(i));
             }
-            fileLines.set(yOffset + 1, nameLine.toString());
         }
-
-        //writing the new file lines in the file
-        for (int i = 0; i < fileLines.size() - 1; i++) {
-            writer.write(fileLines.get(i));
-            writer.newLine();
+        else {
+            StringBuilder nameLine = new StringBuilder(fileLines.get(1));
+            nameLine.setCharAt(1,root.getData().getName());
+            fileLines.set(1, nameLine.toString());
+            return fileLines;
         }
-        writer.close();
-
-        //recursively draw all rectangles
-        drawChildren(root.getLeft(), path, fileLines, false);
-        drawChildren(root.getRight(), path, fileLines, true);
+        return newFileLines;
     }
 
-    public static int[] calculateXOffAndYOff(Node root, boolean isRight, char relation) {
-        int xOffset = 0, yOffset = 0, brotherWidth = 0, brotherHeight = 0, uncleWidth = 0, uncleHeight = 0;
-        if(root.father != null) {
-            brotherWidth = isRight ? root.father.getLeft().getData().getWidth() : 0;
-            brotherHeight = root.father.getLeft().getData().getHeight();
+    public static Node importTreeFromFile(String path){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+            List<String> fileLines = reader.lines().collect(Collectors.toList());
+            return extractTreeFromFile(fileLines);
         }
-        if(root.father != null && root.father.father != null) {
-            uncleWidth = root.father.father.getLeft().getData().getWidth();
-            uncleHeight = root.father.father.getLeft().getData().getHeight();
+        catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+        return new Node();
+    }
+
+    public static Node extractTreeFromFile(List<String> fileLines) {
+        Node root = new Node();
+        char relation = ' ';
+        Node leftChild = new Node();
+        Node rightChild = new Node();
+        int treeHeight = fileLines.size();
+        int treeWidth = fileLines.get(1).length();
+
+        boolean isHorizontal = false;
+        int indexOfHorizontalRel = 0;
+        for (int j = 1; j < fileLines.size() - 1; j++) {
+            String line = fileLines.get(j);
+            int width = 0;
+            for (int i = 1; i < line.length() - 1; i++) {
+                if(line.charAt(i) == '-') {
+                    width++;
+                }
+            }
+            if(width == line.length() - 2){
+                indexOfHorizontalRel = j;
+                isHorizontal = true;
+                break;
+            }
         }
 
-        if(relation == '-') {
-            //calculating xOffset and yOffset to know where to draw the horizontal line
-            if (root.father != null) {
-                if (root.father.getData().getRelation() == '|') {
-                    xOffset = brotherWidth;
-                }
-                if (isRight && root.father.getData().getRelation() == '-') {
-                    yOffset = brotherHeight;
-                    if (root.father.father != null && root.father.father.getData().getRelation() == '|') {
-                        xOffset = uncleWidth;
+        String firstLine = fileLines.get(1);
+        int indexOfVerticalRel = 0;
+        for(int i = 1; i < firstLine.length() - 1; i++) {
+            if(firstLine.charAt(i) == '|') {
+                indexOfVerticalRel = i;
+                for(int j = 1; j < fileLines.size() - 1; j++) {
+                    if(fileLines.get(j).charAt(i) != '|') {
+                        break;
                     }
-                } else {
-                    yOffset = uncleHeight;
                 }
-            }
-        }
-        else if(relation == '|') {
-            //calculating xOffset and yOffset to know where to draw the horizontal line
-            if (root.father != null) {
-                if (root.father.getData().getRelation() == '-' && isRight) {
-                    yOffset = brotherHeight;
-                }
-                xOffset = root.father.getData().getRelation() == '-' ? 0 : brotherWidth;
             }
         }
 
-        return new int[]{xOffset, yOffset};
+        if(isHorizontal) {
+            relation = '-';
+            leftChild = extractTreeFromFile(fileLines.subList(0, indexOfHorizontalRel));
+            rightChild = extractTreeFromFile(fileLines.subList(indexOfHorizontalRel, fileLines.size()));
+        }
+        else if(indexOfVerticalRel != 0){
+            relation = '|';
+            List<String> leftLines = new ArrayList<>();
+            List<String> rightLines = new ArrayList<>();
+            for (String line : fileLines) {
+                leftLines.add(line.substring(0, indexOfVerticalRel));
+                rightLines.add(line.substring(indexOfVerticalRel));
+            }
+            leftChild = extractTreeFromFile(leftLines);
+            rightChild = extractTreeFromFile(rightLines);
+        }
+        else {
+            char name = fileLines.get(1).charAt(1) == ' ' ? fileLines.get(1).charAt(2) : fileLines.get(1).charAt(1);
+            root.setData(new Data(treeWidth, treeHeight, name));
+            return root;
+        }
+
+        root.setData(new Data(relation));
+        root.getData().setHeight(treeHeight);
+        root.getData().setWidth(treeWidth);
+        root.setLeft(leftChild);
+        root.setRight(rightChild);
+        return root;
     }
 
-    public static Node ImportTreeFromString(String input) {
+    public static Node importTreeFromString(String input) {
         int count = 0;
         Node root = new Node();
         Node rightChild = new Node();
@@ -191,10 +226,10 @@ public class AssetFunctions {
                 }
                 else {
                     if(input.charAt(0) == '(') {
-                        leftChild = ImportTreeFromString(input.substring(1, i));
+                        leftChild = importTreeFromString(input.substring(1, i));
                     }
                     else {
-                        leftChild = ImportTreeFromString(input.substring(0, i));
+                        leftChild = importTreeFromString(input.substring(0, i));
                     }
                 }
                 String rightSubstring = input.substring(i + 1);
@@ -210,10 +245,10 @@ public class AssetFunctions {
                 }
                 else {
                     if(input.charAt(i + 1) == '(') {
-                        rightChild = ImportTreeFromString(input.substring(i + 2));
+                        rightChild = importTreeFromString(input.substring(i + 2));
                     }
                     else {
-                        rightChild = ImportTreeFromString(rightSubstring);
+                        rightChild = importTreeFromString(rightSubstring);
                     }
                 }
             }
