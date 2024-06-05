@@ -39,7 +39,7 @@ public class Node {
     public boolean checkRec() {
         if(!this.isFather())
             return true;
-
+        System.out.println(this);
         boolean leftIsRec = false;
         boolean rightIsRec = false;
 
@@ -66,14 +66,6 @@ public class Node {
         if(rightIsRec){
             right.maxNumberOfRecs++;
             maxNumberOfRecs += right.maxNumberOfRecs;
-        }
-        if(leftIsRec && rightIsRec) {
-            if(right.isFather()) {
-                maxNumberOfRecs ++;
-            }
-            if(left.isFather()) {
-                maxNumberOfRecs ++;
-            }
         }
         return leftIsRec && rightIsRec;
     }

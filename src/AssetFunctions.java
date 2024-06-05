@@ -275,7 +275,7 @@ public class AssetFunctions {
         return root;
     }
 
-    public static String exportStringFromTree(Node tree) {
+    public static String exportTreeToString(Node tree) {
         if(tree == null || !tree.isFather())
             return "";
         String stringTree;
@@ -285,7 +285,7 @@ public class AssetFunctions {
         String leftChildString;
         String rightChildString;
         if(tree.getLeft().isFather()) {
-            leftChildString = "(" + exportStringFromTree(tree.getLeft()) + ")";
+            leftChildString = "(" + exportTreeToString(tree.getLeft()) + ")";
         }
         else {
             leftChildString =
@@ -295,7 +295,7 @@ public class AssetFunctions {
                             + "]";
         }
         if(tree.getRight().isFather()) {
-            rightChildString = "(" + exportStringFromTree(tree.getRight()) + ")";
+            rightChildString = "(" + exportTreeToString(tree.getRight()) + ")";
         }
         else {
             rightChildString =
